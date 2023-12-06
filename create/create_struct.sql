@@ -1,18 +1,20 @@
 use sb_crm;
 
-DROP TABLE IF EXISTS Staff;
-DROP TABLE IF EXISTS Product_Unit;
 DROP TABLE IF EXISTS Amount_Product;
+DROP TABLE IF EXISTS Product_Unit;
 DROP TABLE IF EXISTS Work_Shift;
 DROP TABLE IF EXISTS Shop_Point_Product;
 DROP TABLE IF EXISTS Shop_Point;
 DROP TABLE IF EXISTS Product;
+DROP TABLE IF EXISTS Staff;
+
 
 CREATE TABLE Staff(
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(64) NOT NULL CHECK (username != ''),
     password VARCHAR(64) NOT NULL CHECK (password != ''),
-    staff_full_name VARCHAR(64) NOT NULL CHECK (staff_full_name != ''),
+	staff_full_name VARCHAR(64) NOT NULL CHECK (staff_full_name != ''),
+	staff_person_data JSON DEFAULT NULL,
     is_master_staff BOOLEAN NOT NULL
 );
 
@@ -20,7 +22,8 @@ CREATE TABLE Product(
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(64) NOT NULL CHECK (name != ''),
     article INT NOT NULL UNIQUE CHECK (article > 0),
-	manufacturer varchar(256)
+	manufacturer varchar(256),
+	product_properties JSON DEFAULT NULL
 );
 
 CREATE TABLE Product_Unit(
