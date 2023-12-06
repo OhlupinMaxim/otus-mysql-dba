@@ -1,0 +1,4 @@
+CREATE DATABASE IF NOT EXISTS sb_crm;
+CREATE USER IF NOT EXISTS 'sb_crm_user'@'localhost' IDENTIFIED BY '12345maxim';
+GRANT ALL ON sb_crm.* TO 'sb_crm_user'@'localhost';
+GRANT REFERENCES ON sb_crm.* TO 'sb_crm_user'@'localhost';
