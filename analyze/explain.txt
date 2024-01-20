@@ -1,0 +1,328 @@
+mysql: [Warning] World-writable config file '/etc/mysql/conf.d/my.cnf' is ignored.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+EXPLAIN
+-> Sort: ofi.officeCode  (actual time=7.025..7.123 rows=1353 loops=1)
+    -> Table scan on <temporary>  (actual time=0.000..0.100 rows=1353 loops=1)
+        -> Aggregate using temporary table  (actual time=6.701..6.844 rows=1353 loops=1)
+            -> Nested loop inner join  (actual time=5.425..6.026 rows=1353 loops=1)
+                -> Nested loop inner join  (cost=67.58 rows=33) (actual time=0.077..0.388 rows=145 loops=1)
+                    -> Nested loop inner join  (cost=56.17 rows=33) (actual time=0.074..0.315 rows=145 loops=1)
+                        -> Nested loop inner join  (cost=44.76 rows=33) (actual time=0.071..0.243 rows=145 loops=1)
+                            -> Filter: ((o.`status` = 'Shipped') and (year(o.orderDate) = 2004))  (cost=33.35 rows=33) (actual time=0.062..0.122 rows=145 loops=1)
+                                -> Table scan on o  (cost=33.35 rows=326) (actual time=0.027..0.082 rows=326 loops=1)
+                            -> Filter: (c.salesRepEmployeeNumber is not null)  (cost=0.25 rows=1) (actual time=0.001..0.001 rows=1 loops=145)
+                                -> Single-row index lookup on c using PRIMARY (customerNumber=o.customerNumber)  (cost=0.25 rows=1) (actual time=0.001..0.001 rows=1 loops=145)
+                        -> Single-row index lookup on e using PRIMARY (employeeNumber=c.salesRepEmployeeNumber)  (cost=0.25 rows=1) (actual time=0.000..0.000 rows=1 loops=145)
+                    -> Single-row index lookup on ofi using PRIMARY (officeCode=e.officeCode)  (cost=0.25 rows=1) (actual time=0.000..0.000 rows=1 loops=145)
+                -> Index lookup on pl using <auto_key0> (orderNumber=o.orderNumber)  (actual time=0.000..0.001 rows=9 loops=145)
+                    -> Materialize CTE product_list  (actual time=0.037..0.038 rows=9 loops=145)
+                        -> Table scan on <temporary>  (actual time=0.001..0.204 rows=2996 loops=1)
+                            -> Aggregate using temporary table  (actual time=3.870..4.188 rows=2996 loops=1)
+                                -> Nested loop inner join  (cost=1070.22 rows=3023) (actual time=0.051..2.568 rows=2996 loops=1)
+                                    -> Table scan on p  (cost=12.00 rows=110) (actual time=0.014..0.039 rows=110 loops=1)
+                                    -> Index lookup on od using productCode (productCode=p.productCode)  (cost=6.90 rows=27) (actual time=0.020..0.022 rows=27 loops=110)
+
+mysql: [Warning] World-writable config file '/etc/mysql/conf.d/my.cnf' is ignored.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	PRIMARY	o	NULL	ALL	PRIMARY,customerNumber	NULL	NULL	NULL	326	10.00	Using where; Using temporary; Using filesort
+1	PRIMARY	c	NULL	eq_ref	PRIMARY,salesRepEmployeeNumber	PRIMARY	4	classicmodels.o.customerNumber	1	100.00	Using where
+1	PRIMARY	e	NULL	eq_ref	PRIMARY,officeCode	PRIMARY	4	classicmodels.c.salesRepEmployeeNumber	1	100.00	NULL
+1	PRIMARY	ofi	NULL	eq_ref	PRIMARY	PRIMARY	42	classicmodels.e.officeCode	1	100.00	NULL
+1	PRIMARY	<derived2>	NULL	ref	<auto_key0>	<auto_key0>	4	classicmodels.o.orderNumber	10	100.00	NULL
+2	DERIVED	p	NULL	ALL	PRIMARY	NULL	NULL	NULL	110	100.00	Using temporary
+2	DERIVED	od	NULL	ref	productCode	productCode	62	classicmodels.p.productCode	27	100.00	NULL
+mysql: [Warning] World-writable config file '/etc/mysql/conf.d/my.cnf' is ignored.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+
+EXPLAIN
+-> Sort: ofi.officeCode
+    -> Table scan on <temporary>
+        -> Aggregate using temporary table
+            -> Nested loop inner join
+                -> Nested loop inner join  (cost=67.58 rows=33)
+                    -> Nested loop inner join  (cost=56.17 rows=33)
+                        -> Nested loop inner join  (cost=44.76 rows=33)
+                            -> Filter: ((o.`status` = 'Shipped') and (year(o.orderDate) = 2004))  (cost=33.35 rows=33)
+                                -> Table scan on o  (cost=33.35 rows=326)
+                            -> Filter: (c.salesRepEmployeeNumber is not null)  (cost=0.25 rows=1)
+                                -> Single-row index lookup on c using PRIMARY (customerNumber=o.customerNumber)  (cost=0.25 rows=1)
+                        -> Single-row index lookup on e using PRIMARY (employeeNumber=c.salesRepEmployeeNumber)  (cost=0.25 rows=1)
+                    -> Single-row index lookup on ofi using PRIMARY (officeCode=e.officeCode)  (cost=0.25 rows=1)
+                -> Index lookup on pl using <auto_key0> (orderNumber=o.orderNumber)
+                    -> Materialize CTE product_list
+                        -> Table scan on <temporary>
+                            -> Aggregate using temporary table
+                                -> Nested loop inner join  (cost=1070.22 rows=3023)
+                                    -> Table scan on p  (cost=12.00 rows=110)
+                                    -> Index lookup on od using productCode (productCode=p.productCode)  (cost=6.90 rows=27)
+
+mysql: [Warning] World-writable config file '/etc/mysql/conf.d/my.cnf' is ignored.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+EXPLAIN
+-> Limit/Offset: 10/20 row(s)
+    -> Sort: ofi.officeCode, limit input to 30 row(s) per chunk
+        -> Table scan on <temporary>
+            -> Aggregate using temporary table
+                -> Nested loop inner join
+                    -> Nested loop inner join  (cost=67.58 rows=33)
+                        -> Nested loop inner join  (cost=56.17 rows=33)
+                            -> Nested loop inner join  (cost=44.76 rows=33)
+                                -> Filter: ((o.`status` = 'Shipped') and (year(o.orderDate) = 2004))  (cost=33.35 rows=33)
+                                    -> Table scan on o  (cost=33.35 rows=326)
+                                -> Filter: (c.salesRepEmployeeNumber is not null)  (cost=0.25 rows=1)
+                                    -> Single-row index lookup on c using PRIMARY (customerNumber=o.customerNumber)  (cost=0.25 rows=1)
+                            -> Single-row index lookup on e using PRIMARY (employeeNumber=c.salesRepEmployeeNumber)  (cost=0.25 rows=1)
+                        -> Single-row index lookup on ofi using PRIMARY (officeCode=e.officeCode)  (cost=0.25 rows=1)
+                    -> Index lookup on pl using <auto_key0> (orderNumber=o.orderNumber)
+                        -> Materialize CTE product_list
+                            -> Table scan on <temporary>
+                                -> Aggregate using temporary table
+                                    -> Nested loop inner join  (cost=1070.22 rows=3023)
+                                        -> Table scan on p  (cost=12.00 rows=110)
+                                        -> Index lookup on od using productCode (productCode=p.productCode)  (cost=6.90 rows=27)
+
+mysql: [Warning] World-writable config file '/etc/mysql/conf.d/my.cnf' is ignored.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+EXPLAIN
+{
+  "query_block": {
+    "select_id": 1,
+    "cost_info": {
+      "query_cost": "181.79"
+    },
+    "ordering_operation": {
+      "using_filesort": true,
+      "grouping_operation": {
+        "using_temporary_table": true,
+        "using_filesort": false,
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "o",
+              "access_type": "ALL",
+              "possible_keys": [
+                "PRIMARY",
+                "customerNumber"
+              ],
+              "rows_examined_per_scan": 326,
+              "rows_produced_per_join": 32,
+              "filtered": "10.00",
+              "cost_info": {
+                "read_cost": "30.09",
+                "eval_cost": "3.26",
+                "prefix_cost": "33.35",
+                "data_read_per_join": "3K"
+              },
+              "used_columns": [
+                "orderNumber",
+                "orderDate",
+                "status",
+                "customerNumber"
+              ],
+              "attached_condition": "((`classicmodels`.`o`.`status` = 'Shipped') and (year(`classicmodels`.`o`.`orderDate`) = 2004))"
+            }
+          },
+          {
+            "table": {
+              "table_name": "c",
+              "access_type": "eq_ref",
+              "possible_keys": [
+                "PRIMARY",
+                "salesRepEmployeeNumber"
+              ],
+              "key": "PRIMARY",
+              "used_key_parts": [
+                "customerNumber"
+              ],
+              "key_length": "4",
+              "ref": [
+                "classicmodels.o.customerNumber"
+              ],
+              "rows_examined_per_scan": 1,
+              "rows_produced_per_join": 32,
+              "filtered": "100.00",
+              "cost_info": {
+                "read_cost": "8.15",
+                "eval_cost": "3.26",
+                "prefix_cost": "44.76",
+                "data_read_per_join": "60K"
+              },
+              "used_columns": [
+                "customerNumber",
+                "salesRepEmployeeNumber"
+              ],
+              "attached_condition": "(`classicmodels`.`c`.`salesRepEmployeeNumber` is not null)"
+            }
+          },
+          {
+            "table": {
+              "table_name": "e",
+              "access_type": "eq_ref",
+              "possible_keys": [
+                "PRIMARY",
+                "officeCode"
+              ],
+              "key": "PRIMARY",
+              "used_key_parts": [
+                "employeeNumber"
+              ],
+              "key_length": "4",
+              "ref": [
+                "classicmodels.c.salesRepEmployeeNumber"
+              ],
+              "rows_examined_per_scan": 1,
+              "rows_produced_per_join": 32,
+              "filtered": "100.00",
+              "cost_info": {
+                "read_cost": "8.15",
+                "eval_cost": "3.26",
+                "prefix_cost": "56.17",
+                "data_read_per_join": "35K"
+              },
+              "used_columns": [
+                "employeeNumber",
+                "officeCode"
+              ]
+            }
+          },
+          {
+            "table": {
+              "table_name": "ofi",
+              "access_type": "eq_ref",
+              "possible_keys": [
+                "PRIMARY"
+              ],
+              "key": "PRIMARY",
+              "used_key_parts": [
+                "officeCode"
+              ],
+              "key_length": "42",
+              "ref": [
+                "classicmodels.e.officeCode"
+              ],
+              "rows_examined_per_scan": 1,
+              "rows_produced_per_join": 32,
+              "filtered": "100.00",
+              "cost_info": {
+                "read_cost": "8.15",
+                "eval_cost": "3.26",
+                "prefix_cost": "67.58",
+                "data_read_per_join": "43K"
+              },
+              "used_columns": [
+                "officeCode",
+                "city"
+              ]
+            }
+          },
+          {
+            "table": {
+              "table_name": "pl",
+              "access_type": "ref",
+              "possible_keys": [
+                "<auto_key0>"
+              ],
+              "key": "<auto_key0>",
+              "used_key_parts": [
+                "orderNumber"
+              ],
+              "key_length": "4",
+              "ref": [
+                "classicmodels.o.orderNumber"
+              ],
+              "rows_examined_per_scan": 10,
+              "rows_produced_per_join": 326,
+              "filtered": "100.00",
+              "cost_info": {
+                "read_cost": "81.58",
+                "eval_cost": "32.63",
+                "prefix_cost": "181.79",
+                "data_read_per_join": "183K"
+              },
+              "used_columns": [
+                "productCode",
+                "productName",
+                "productLine",
+                "orderNumber",
+                "quantityOrdered"
+              ],
+              "materialized_from_subquery": {
+                "using_temporary_table": true,
+                "dependent": false,
+                "cacheable": true,
+                "query_block": {
+                  "select_id": 2,
+                  "cost_info": {
+                    "query_cost": "1070.22"
+                  },
+                  "grouping_operation": {
+                    "using_temporary_table": true,
+                    "using_filesort": false,
+                    "nested_loop": [
+                      {
+                        "table": {
+                          "table_name": "p",
+                          "access_type": "ALL",
+                          "possible_keys": [
+                            "PRIMARY"
+                          ],
+                          "rows_examined_per_scan": 110,
+                          "rows_produced_per_join": 110,
+                          "filtered": "100.00",
+                          "cost_info": {
+                            "read_cost": "1.00",
+                            "eval_cost": "11.00",
+                            "prefix_cost": "12.00",
+                            "data_read_per_join": "87K"
+                          },
+                          "used_columns": [
+                            "productCode",
+                            "productName",
+                            "productLine"
+                          ]
+                        }
+                      },
+                      {
+                        "table": {
+                          "table_name": "od",
+                          "access_type": "ref",
+                          "possible_keys": [
+                            "productCode"
+                          ],
+                          "key": "productCode",
+                          "used_key_parts": [
+                            "productCode"
+                          ],
+                          "key_length": "62",
+                          "ref": [
+                            "classicmodels.p.productCode"
+                          ],
+                          "rows_examined_per_scan": 27,
+                          "rows_produced_per_join": 3023,
+                          "filtered": "100.00",
+                          "cost_info": {
+                            "read_cost": "755.87",
+                            "eval_cost": "302.35",
+                            "prefix_cost": "1070.22",
+                            "data_read_per_join": "236K"
+                          },
+                          "used_columns": [
+                            "orderNumber",
+                            "productCode",
+                            "quantityOrdered"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
